@@ -3,47 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English 3000 - Pro Audio</title>
+    <title>English 3000 - Pro Audio ERP</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #64748b;
-            --success: #22c55e;
-            --danger: #ef4444;
-            --bg: #f1f5f9;
-        }
+        :root { --primary: #2563eb; --secondary: #64748b; --success: #22c55e; --danger: #ef4444; --bg: #f1f5f9; }
         body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .container { background: white; padding: 2.5rem; border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 550px; }
         .progress-container { margin-bottom: 1.5rem; }
         .progress-bar { height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s ease; }
         .stats-text { font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem; font-weight: 500; }
-        
-        .card { min-height: 350px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .word-wrapper { display: flex; align-items: center; gap: 15px; margin-bottom: 0; }
-        .word { font-size: 3rem; font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -1px; }
-        .speaker-icon { cursor: pointer; font-size: 1.5rem; color: var(--primary); transition: 0.2s; }
-        .speaker-icon:hover { transform: scale(1.2); }
-
+        .card { min-height: 350px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .word-row { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
+        .word { font-size: 3rem; font-weight: 800; color: #1e293b; margin: 0; }
+        .speaker-btn { cursor: pointer; font-size: 1.5rem; color: var(--primary); background: #eff6ff; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; transition: 0.2s; }
+        .speaker-btn:hover { background: #dbeafe; transform: scale(1.1); }
         .phonetic { color: var(--primary); font-family: monospace; font-size: 1.2rem; margin-bottom: 1.5rem; }
-        
-        .meaning-box { width: 100%; display: none; animation: fadeIn 0.3s ease; }
-        .meaning { font-size: 1.4rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; }
-        
-        .example-section { text-align: left; margin-bottom: 1rem; }
-        .example-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
-        .example-content { flex: 1; }
-        .example-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); font-weight: 700; margin-bottom: 2px; display: block; }
-        .example-text { font-size: 0.95rem; color: #334155; line-height: 1.4; font-style: italic; margin: 0; }
-        .example-text b { color: var(--primary); font-style: normal; }
-
-        .btn { border: none; padding: 1rem 1.5rem; border-radius: 0.75rem; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.2s; width: 100%; margin-top: 10px; }
+        .meaning-box { width: 100%; display: none; animation: fadeIn 0.3s ease; text-align: left; }
+        .meaning { font-size: 1.4rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; text-align: center; }
+        .ex-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; }
+        .ex-text { flex: 1; font-size: 0.95rem; color: #334155; margin: 0; line-height: 1.4; }
+        .ex-label { font-size: 0.7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; display: block; margin-bottom: 3px; }
+        .btn { border: none; padding: 1rem; border-radius: 0.75rem; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
-        
         .controls { display: none; gap: 12px; margin-top: 1rem; }
-        .btn-easy { background: var(--success); color: white; }
-        .btn-hard { background: var(--danger); color: white; }
-
+        .btn-easy { background: var(--success); color: white; flex: 1; }
+        .btn-hard { background: var(--danger); color: white; flex: 1; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -51,42 +35,39 @@
 
 <div class="container">
     <div class="progress-container">
-        <div id="stats" class="stats-text">Học tập trung...</div>
+        <div id="stats" class="stats-text">Học tập...</div>
         <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
     </div>
 
     <div class="card">
-        <div class="word-wrapper">
+        <div class="word-row">
             <h1 id="wordDisplay" class="word">...</h1>
-            <span class="speaker-icon" onclick="speak('wordDisplay')">🔊</span>
+            <button class="speaker-btn" onclick="speak('wordDisplay')">🔊</button>
         </div>
         <div id="phoneticDisplay" class="phonetic">/.../</div>
         
         <div id="meaningBox" class="meaning-box">
             <div id="meaningDisplay" class="meaning">Nghĩa</div>
             
-            <div class="example-section">
-                <div class="example-row">
-                    <div class="example-content">
-                        <span class="example-label">Daily</span>
-                        <p id="dailyEx" class="example-text"></p>
-                    </div>
-                    <span class="speaker-icon" onclick="speak('dailyEx')">🔊</span>
+            <div class="ex-row">
+                <div class="ex-text">
+                    <span class="ex-label">Hàng ngày</span>
+                    <p id="dailyEx"></p>
                 </div>
-                
-                <div class="example-row">
-                    <div class="example-content">
-                        <span class="example-label">Technical</span>
-                        <p id="techEx" class="example-text"></p>
-                    </div>
-                    <span class="speaker-icon" onclick="speak('techEx')">🔊</span>
+                <button class="speaker-btn" style="font-size: 1rem; width: 30px; height: 30px;" onclick="speak('dailyEx')">🔊</button>
+            </div>
+            
+            <div class="ex-row">
+                <div class="ex-text">
+                    <span class="ex-label">ERP / SQL</span>
+                    <p id="techEx"></p>
                 </div>
+                <button class="speaker-btn" style="font-size: 1rem; width: 30px; height: 30px;" onclick="speak('techEx')">🔊</button>
             </div>
         </div>
     </div>
 
-    <button id="showBtn" class="btn btn-primary">Xem đáp án (Space)</button>
-    
+    <button id="showBtn" class="btn btn-primary">Xem đáp án & Nghe ví dụ (Space)</button>
     <div id="controls" class="controls">
         <button onclick="handleAnswer(true)" class="btn btn-easy">Thuộc rồi (→)</button>
         <button onclick="handleAnswer(false)" class="btn btn-hard">Chưa thuộc</button>
@@ -94,36 +75,35 @@
 </div>
 
 <script>
+    // BỘ DỮ LIỆU CẢI TIẾN - Bạn có thể copy thêm hàng ngàn từ vào đây
     const dictionary = [
-        { 
-            w: "Analyze", p: "/ˈæn.əl.aɪz/", m: "Phân tích",
-            daily: "We need to <b>analyze</b> the results of the test.",
-            tech: "The system will <b>analyze</b> the SQL execution plan for performance."
-        },
-        { 
-            w: "Execute", p: "/ˈek.sɪ.kjuːt/", m: "Thực thi",
-            daily: "They <b>executed</b> the plan perfectly.",
-            tech: "Click the button to <b>execute</b> the stored procedure."
-        },
-        { 
-            w: "Configuration", p: "/kənˌfɪɡ.jəˈreɪ.ʃən/", m: "Cấu hình",
-            daily: "The <b>configuration</b> of the new office took two days.",
-            tech: "Check the ERP <b>configuration</b> file for database settings."
-        }
+        { w: "Analyze", p: "/ˈæn.əl.aɪz/", m: "Phân tích", daily: "We need to <b>analyze</b> the sales data.", tech: "Analyze the SQL execution plan for slow queries." },
+        { w: "Execute", p: "/ˈek.sɪ.kjuːt/", m: "Thực thi", daily: "The plan was <b>executed</b> perfectly.", tech: "Execute the stored procedure to update inventory." },
+        { w: "Migration", p: "/maɪˈɡreɪ.ʃən/", m: "Di trú / Chuyển đổi dữ liệu", daily: "The <b>migration</b> of birds happens in winter.", tech: "We are performing a data <b>migration</b> to the new ERP system." },
+        { w: "Integrity", p: "/ɪnˈteɡ.rə.ti/", m: "Tính toàn vẹn", daily: "He is a man of great <b>integrity</b>.", tech: "Referential <b>integrity</b> ensures consistent data between tables." },
+        { w: "Deployment", p: "/dɪˈplɔɪ.mənt/", m: "Triển khai", daily: "The <b>deployment</b> of troops took weeks.", tech: "The ERP <b>deployment</b> is scheduled for this weekend." },
+        { w: "Query", p: "/ˈkwɪə.ri/", m: "Truy vấn / Thắc mắc", daily: "I have a <b>query</b> about my flight.", tech: "This SQL <b>query</b> returns all customers from Hanoi." },
+        { w: "Redundant", p: "/rɪˈdʌn.dənt/", m: "Dư thừa", daily: "The computer made many workers <b>redundant</b>.", tech: "Remove <b>redundant</b> columns to normalize the database." },
+        { w: "Validate", p: "/ˈvæl.ɪ.deɪt/", m: "Xác thực", daily: "The ticket is not <b>valid</b> until stamped.", tech: "The system will <b>validate</b> the VAT number automatically." },
+        { w: "Maintenance", p: "/ˈmeɪn.tən.əns/", m: "Bảo trì", daily: "The car is in for <b>maintenance</b>.", tech: "Regular database <b>maintenance</b> improves ERP speed." },
+        { w: "Constraint", p: "/kənˈstreɪnt/", m: "Ràng buộc", daily: "Time is a major <b>constraint</b> for us.", tech: "Adding a foreign key <b>constraint</b> to the table." }
+        // Thêm từ thứ 11...3000 vào đây
     ];
 
     let currentIndex = parseInt(localStorage.getItem('erp_idx')) || 0;
     let score = parseInt(localStorage.getItem('erp_score')) || 0;
 
     function speak(elementId) {
+        window.speechSynthesis.cancel(); // Dừng các âm thanh đang phát để phát âm mới
         const text = document.getElementById(elementId).innerText;
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
-        utterance.rate = 0.9; // Tốc độ đọc hơi chậm một chút để dễ nghe
+        utterance.rate = 0.85; 
         window.speechSynthesis.speak(utterance);
     }
 
     function render() {
+        if (currentIndex >= dictionary.length) currentIndex = 0;
         const data = dictionary[currentIndex];
         document.getElementById('wordDisplay').innerText = data.w;
         document.getElementById('phoneticDisplay').innerText = data.p;
@@ -137,10 +117,9 @@
         
         const progress = (score / dictionary.length) * 100;
         document.getElementById('progressFill').style.width = `${progress}%`;
-        document.getElementById('stats').innerText = `Tiến độ: ${score}/${dictionary.length} từ`;
+        document.getElementById('stats').innerText = `Đã thuộc: ${score}/${dictionary.length} từ`;
         
-        // Tự động đọc từ mới khi chuyển sang
-        speak('wordDisplay');
+        speak('wordDisplay'); // Tự động đọc từ mới
     }
 
     function show() {
@@ -160,7 +139,6 @@
     }
 
     document.getElementById('showBtn').addEventListener('click', show);
-    
     document.addEventListener('keydown', (e) => {
         if(e.code === 'Space') show();
         if(e.code === 'ArrowRight' && document.getElementById('controls').style.display === 'flex') handleAnswer(true);
@@ -168,6 +146,5 @@
 
     render();
 </script>
-
 </body>
 </html>
