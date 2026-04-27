@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English 3000 - Professional & Daily Context</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+        }
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 2.5rem; border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 550px; }
+        .progress-container { margin-bottom: 1.5rem; }
+        .progress-bar { height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s ease; }
+        .stats-text { font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem; font-weight: 500; }
+        
+        .card { min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .word { font-size: 3rem; font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -1px; }
+        .phonetic { color: var(--primary); font-family: monospace; font-size: 1.2rem; margin-bottom: 1.5rem; }
+        
+        .meaning-box { width: 100%; display: none; animation: fadeIn 0.3s ease; }
+        .meaning { font-size: 1.4rem; font-weight: 600; color: #0f172a; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; }
+        
+        .example-section { text-align: left; margin-bottom: 1rem; }
+        .example-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); font-weight: 700; margin-bottom: 4px; display: block; }
+        .example-text { font-size: 0.95rem; color: #334155; line-height: 1.5; margin-bottom: 12px; font-style: italic; }
+        .example-text b { color: var(--primary); font-style: normal; }
+
+        .btn { border: none; padding: 1rem 1.5rem; border-radius: 0.75rem; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.2s; width: 100%; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
+        
+        .controls { display: none; gap: 12px; margin-top: 1rem; }
+        .btn-easy { background: var(--success); color: white; }
+        .btn-hard { background: var(--danger); color: white; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="progress-container">
+        <div id="stats" class="stats-text">Hôm nay bạn chưa học từ nào</div>
+        <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+    </div>
+
+    <div class="card">
+        <h1 id="wordDisplay" class="word">...</h1>
+        <div id="phoneticDisplay" class="phonetic">/.../</div>
+        
+        <div id="meaningBox" class="meaning-box">
+            <div id="meaningDisplay" class="meaning">Nghĩa của từ</div>
+            
+            <div class="example-section">
+                <span class="example-label">Giao tiếp hàng ngày</span>
+                <div id="dailyEx" class="example-text"></div>
+                
+                <span class="example-label">Chuyên ngành (ERP/SQL)</span>
+                <div id="techEx" class="example-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <button id="showBtn" class="btn btn-primary">Xem đáp án & Ví dụ (Space)</button>
+    
+    <div id="controls" class="controls">
+        <button onclick="handleAnswer(true)" class="btn btn-easy">Đã thuộc (→)</button>
+        <button onclick="handleAnswer(false)" class="btn btn-hard">Cần học lại</button>
+    </div>
+</div>
+
+<script>
+    const dictionary = [
+        { 
+            w: "Optimize", p: "/ˈɒp.tɪ.maɪz/", m: "Tối ưu hóa",
+            daily: "We need to <b>optimize</b> our time to finish the project.",
+            tech: "You should <b>optimize</b> the SQL query to reduce server load."
+        },
+        { 
+            w: "Structure", p: "/ˈstrʌk.tʃər/", m: "Cấu trúc",
+            daily: "The <b>structure</b> of this building is very modern.",
+            tech: "Checking the table <b>structure</b> before migrating data."
+        },
+        { 
+            w: "Conflict", p: "/ˈkɒn.flɪkt/", m: "Xung đột",
+            daily: "They are trying to resolve the <b>conflict</b> between friends.",
+            tech: "A <b>conflict</b> occurred during the ERP system integration."
+        },
+        { 
+            w: "Implement", p: "/ˈɪm.plɪ.ment/", m: "Triển khai / Thực hiện",
+            daily: "The new rule will be <b>implemented</b> next month.",
+            tech: "Our team will <b>implement</b> a new module for the ERP system."
+        },
+        { 
+            w: "Reliable", p: "/rɪˈlaɪ.ə.bəl/", m: "Đáng tin cậy",
+            daily: "He is a very <b>reliable</b> person in our family.",
+            tech: "We need a <b>reliable</b> database to store financial records."
+        }
+    ];
+
+    let currentIndex = parseInt(localStorage.getItem('erp_idx')) || 0;
+    let score = parseInt(localStorage.getItem('erp_score')) || 0;
+
+    function render() {
+        const data = dictionary[currentIndex];
+        document.getElementById('wordDisplay').innerText = data.w;
+        document.getElementById('phoneticDisplay').innerText = data.p;
+        document.getElementById('meaningDisplay').innerText = data.m;
+        document.getElementById('dailyEx').innerHTML = data.daily;
+        document.getElementById('techEx').innerHTML = data.tech;
+        
+        document.getElementById('meaningBox').style.display = 'none';
+        document.getElementById('showBtn').style.display = 'block';
+        document.getElementById('controls').style.display = 'none';
+        
+        const progress = (score / dictionary.length) * 100;
+        document.getElementById('progressFill').style.width = `${progress}%`;
+        document.getElementById('stats').innerText = `Tiến độ: ${score}/${dictionary.length} từ đã thuộc`;
+    }
+
+    function show() {
+        document.getElementById('meaningBox').style.display = 'block';
+        document.getElementById('showBtn').style.display = 'none';
+        document.getElementById('controls').style.display = 'flex';
+    }
+
+    function handleAnswer(isEasy) {
+        if(isEasy) {
+            score++;
+            localStorage.setItem('erp_score', score);
+        }
+        currentIndex = (currentIndex + 1) % dictionary.length;
+        localStorage.setItem('erp_idx', currentIndex);
+        render();
+    }
+
+    document.getElementById('showBtn').addEventListener('click', show);
+    
+    document.addEventListener('keydown', (e) => {
+        if(e.code === 'Space') show();
+        if(e.code === 'ArrowRight' && document.getElementById('controls').style.display === 'flex') handleAnswer(true);
+    });
+
+    render();
+</script>
+
+</body>
+</html>
