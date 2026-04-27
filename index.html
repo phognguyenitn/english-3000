@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English 3000 - Professional & Daily Context</title>
+    <title>English 3000 - Pro Audio</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -19,21 +19,26 @@
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s ease; }
         .stats-text { font-size: 0.85rem; color: var(--secondary); margin-bottom: 0.5rem; font-weight: 500; }
         
-        .card { min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .card { min-height: 350px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .word-wrapper { display: flex; align-items: center; gap: 15px; margin-bottom: 0; }
         .word { font-size: 3rem; font-weight: 800; color: #1e293b; margin: 0; letter-spacing: -1px; }
+        .speaker-icon { cursor: pointer; font-size: 1.5rem; color: var(--primary); transition: 0.2s; }
+        .speaker-icon:hover { transform: scale(1.2); }
+
         .phonetic { color: var(--primary); font-family: monospace; font-size: 1.2rem; margin-bottom: 1.5rem; }
         
         .meaning-box { width: 100%; display: none; animation: fadeIn 0.3s ease; }
-        .meaning { font-size: 1.4rem; font-weight: 600; color: #0f172a; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; }
+        .meaning { font-size: 1.4rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0; }
         
         .example-section { text-align: left; margin-bottom: 1rem; }
-        .example-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); font-weight: 700; margin-bottom: 4px; display: block; }
-        .example-text { font-size: 0.95rem; color: #334155; line-height: 1.5; margin-bottom: 12px; font-style: italic; }
+        .example-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+        .example-content { flex: 1; }
+        .example-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); font-weight: 700; margin-bottom: 2px; display: block; }
+        .example-text { font-size: 0.95rem; color: #334155; line-height: 1.4; font-style: italic; margin: 0; }
         .example-text b { color: var(--primary); font-style: normal; }
 
-        .btn { border: none; padding: 1rem 1.5rem; border-radius: 0.75rem; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.2s; width: 100%; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
+        .btn { border: none; padding: 1rem 1.5rem; border-radius: 0.75rem; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.2s; width: 100%; margin-top: 10px; }
+        .btn-primary { background: var(--primary); color: white; }
         
         .controls { display: none; gap: 12px; margin-top: 1rem; }
         .btn-easy { background: var(--success); color: white; }
@@ -46,66 +51,77 @@
 
 <div class="container">
     <div class="progress-container">
-        <div id="stats" class="stats-text">Hôm nay bạn chưa học từ nào</div>
+        <div id="stats" class="stats-text">Học tập trung...</div>
         <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
     </div>
 
     <div class="card">
-        <h1 id="wordDisplay" class="word">...</h1>
+        <div class="word-wrapper">
+            <h1 id="wordDisplay" class="word">...</h1>
+            <span class="speaker-icon" onclick="speak('wordDisplay')">🔊</span>
+        </div>
         <div id="phoneticDisplay" class="phonetic">/.../</div>
         
         <div id="meaningBox" class="meaning-box">
-            <div id="meaningDisplay" class="meaning">Nghĩa của từ</div>
+            <div id="meaningDisplay" class="meaning">Nghĩa</div>
             
             <div class="example-section">
-                <span class="example-label">Giao tiếp hàng ngày</span>
-                <div id="dailyEx" class="example-text"></div>
+                <div class="example-row">
+                    <div class="example-content">
+                        <span class="example-label">Daily</span>
+                        <p id="dailyEx" class="example-text"></p>
+                    </div>
+                    <span class="speaker-icon" onclick="speak('dailyEx')">🔊</span>
+                </div>
                 
-                <span class="example-label">Chuyên ngành (ERP/SQL)</span>
-                <div id="techEx" class="example-text"></div>
+                <div class="example-row">
+                    <div class="example-content">
+                        <span class="example-label">Technical</span>
+                        <p id="techEx" class="example-text"></p>
+                    </div>
+                    <span class="speaker-icon" onclick="speak('techEx')">🔊</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <button id="showBtn" class="btn btn-primary">Xem đáp án & Ví dụ (Space)</button>
+    <button id="showBtn" class="btn btn-primary">Xem đáp án (Space)</button>
     
     <div id="controls" class="controls">
-        <button onclick="handleAnswer(true)" class="btn btn-easy">Đã thuộc (→)</button>
-        <button onclick="handleAnswer(false)" class="btn btn-hard">Cần học lại</button>
+        <button onclick="handleAnswer(true)" class="btn btn-easy">Thuộc rồi (→)</button>
+        <button onclick="handleAnswer(false)" class="btn btn-hard">Chưa thuộc</button>
     </div>
 </div>
 
 <script>
     const dictionary = [
         { 
-            w: "Optimize", p: "/ˈɒp.tɪ.maɪz/", m: "Tối ưu hóa",
-            daily: "We need to <b>optimize</b> our time to finish the project.",
-            tech: "You should <b>optimize</b> the SQL query to reduce server load."
+            w: "Analyze", p: "/ˈæn.əl.aɪz/", m: "Phân tích",
+            daily: "We need to <b>analyze</b> the results of the test.",
+            tech: "The system will <b>analyze</b> the SQL execution plan for performance."
         },
         { 
-            w: "Structure", p: "/ˈstrʌk.tʃər/", m: "Cấu trúc",
-            daily: "The <b>structure</b> of this building is very modern.",
-            tech: "Checking the table <b>structure</b> before migrating data."
+            w: "Execute", p: "/ˈek.sɪ.kjuːt/", m: "Thực thi",
+            daily: "They <b>executed</b> the plan perfectly.",
+            tech: "Click the button to <b>execute</b> the stored procedure."
         },
         { 
-            w: "Conflict", p: "/ˈkɒn.flɪkt/", m: "Xung đột",
-            daily: "They are trying to resolve the <b>conflict</b> between friends.",
-            tech: "A <b>conflict</b> occurred during the ERP system integration."
-        },
-        { 
-            w: "Implement", p: "/ˈɪm.plɪ.ment/", m: "Triển khai / Thực hiện",
-            daily: "The new rule will be <b>implemented</b> next month.",
-            tech: "Our team will <b>implement</b> a new module for the ERP system."
-        },
-        { 
-            w: "Reliable", p: "/rɪˈlaɪ.ə.bəl/", m: "Đáng tin cậy",
-            daily: "He is a very <b>reliable</b> person in our family.",
-            tech: "We need a <b>reliable</b> database to store financial records."
+            w: "Configuration", p: "/kənˌfɪɡ.jəˈreɪ.ʃən/", m: "Cấu hình",
+            daily: "The <b>configuration</b> of the new office took two days.",
+            tech: "Check the ERP <b>configuration</b> file for database settings."
         }
     ];
 
     let currentIndex = parseInt(localStorage.getItem('erp_idx')) || 0;
     let score = parseInt(localStorage.getItem('erp_score')) || 0;
+
+    function speak(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9; // Tốc độ đọc hơi chậm một chút để dễ nghe
+        window.speechSynthesis.speak(utterance);
+    }
 
     function render() {
         const data = dictionary[currentIndex];
@@ -121,7 +137,10 @@
         
         const progress = (score / dictionary.length) * 100;
         document.getElementById('progressFill').style.width = `${progress}%`;
-        document.getElementById('stats').innerText = `Tiến độ: ${score}/${dictionary.length} từ đã thuộc`;
+        document.getElementById('stats').innerText = `Tiến độ: ${score}/${dictionary.length} từ`;
+        
+        // Tự động đọc từ mới khi chuyển sang
+        speak('wordDisplay');
     }
 
     function show() {
